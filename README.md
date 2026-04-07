@@ -5,8 +5,8 @@
 ## Features
 
 -- Live Radar Sweep — Rotating 360° sweep with range rings and crosshairs
--- Enemy Fleet — 10 hostile warships from Russia, China, Iran, and North Korea with randomized positions and movement
--- Friendly Fleet — 6 allied warships that can take damage and be destroyed
+-- Enemy Fleet — hostile warships from Russia, China, Iran, and North Korea with randomized positions and movement
+-- Friendly Fleet — allied warships that can take damage and be destroyed
 -- Target Lock — Click any blip on the radar to lock on and view ship details
 -- Weapons Systems — Four operational weapons with individual ammo tracking
 
@@ -17,7 +17,7 @@
 
 
 -- Enemy AI — Hostile ships dodge incoming fire, deploy countermeasures, and attack your vessel and allies
--- Hull Damage System — USS NavRadar takes damage from enemy fire; hull bar turns yellow then red as integrity drops
+-- Hull Damage System — US Destroyer takes damage from enemy fire; hull bar turns yellow then red as integrity drops
 -- Live Combat Log — All events logged in real time with timestamps
 -- Dynamic Target Panel — Live bearing, range, speed, and nation data for locked targets
 
