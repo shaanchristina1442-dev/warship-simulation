@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>NavRadar — Warship Weapons System</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- TOP BAR -->
+  <header class="top-bar">
+    <div class="top-bar__left">
+      <span class="status-dot"></span>
+      <span class="label">SYSTEM ONLINE</span>
+    </div>
+    <div class="top-bar__title">
+      <span class="title-prefix">USN</span>
+      <span class="title-main">RADAR</span>
+      <span class="title-suffix">MK-IV</span>
+    </div>
+    <div class="top-bar__right">
+      <span class="label">CLASSIFICATION:</span>
+      <span class="classified">TOP SECRET</span>
+    </div>
+  </header>
+
+  <!-- BODY WRAPPER: everything below topbar -->
+  <div class="body-wrap">
+
+    <!-- LEFT PANEL -->
+    <aside class="panel panel--left">
+      <div class="panel__header">OWN VESSEL</div>
+      <div class="ship-id-block">
+        <div class="ship-name">USS LILY COLLINS</div>
+        <div class="ship-meta">DDG-112 · REVOLUTION BURKE CLASS</div>
+        <div class="ship-meta">GUIDED MISSILE DESTROYER</div>
+      </div>
+
+      <div class="divider"></div>
+      <div class="panel__header">VESSEL STATUS</div>
+      <div class="stat-block">
+        <div class="stat-row"><span class="stat-label">HULL INTEGRITY</span><span class="stat-value">82%</span></div>
+        <div class="stat-bar"><div class="stat-fill" style="width:82%;background:var(--green);"></div></div>
+      </div>
+      <div class="stat-block">
+        <div class="stat-row"><span class="stat-label">SHIELD POWER</span><span class="stat-value">65%</span></div>
+        <div class="stat-bar"><div class="stat-fill" style="width:65%;background:var(--cyan);"></div></div>
+      </div>
+      <div class="stat-block">
+        <div class="stat-row"><span class="stat-label">ENGINE OUTPUT</span><span class="stat-value">91%</span></div>
+        <div class="stat-bar"><div class="stat-fill" style="width:91%;background:var(--green);"></div></div>
+      </div>
+
+      <div class="divider"></div>
+      <div class="panel__header">NAVIGATION</div>
+      <div class="coord-grid">
+        <div class="coord"><span class="coord-label">LAT</span><span class="coord-val">34°22'N</span></div>
+        <div class="coord"><span class="coord-label">LON</span><span class="coord-val">118°44'W</span></div>
+        <div class="coord"><span class="coord-label">HDG</span><span class="coord-val">247°</span></div>
+        <div class="coord"><span class="coord-label">SPD</span><span class="coord-val">18 KTS</span></div>
+        <div class="coord"><span class="coord-label">DEPTH</span><span class="coord-val">N/A</span></div>
+        <div class="coord"><span class="coord-label">WIND</span><span class="coord-val">12 KTS</span></div>
+      </div>
+
+      <div class="divider"></div>
+      <div class="panel__header">THREAT LEVEL</div>
+      <div class="threat-meter">
+        <div class="threat-seg threat-seg--green active"></div>
+        <div class="threat-seg threat-seg--green active"></div>
+        <div class="threat-seg threat-seg--yellow active"></div>
+        <div class="threat-seg threat-seg--yellow active"></div>
+        <div class="threat-seg threat-seg--red"></div>
+        <div class="threat-seg threat-seg--red"></div>
+      </div>
+      <div class="threat-label">ELEVATED</div>
+    </aside>
+
+    <!-- CENTER COLUMN -->
+    <div class="center-col">
+
+      <!-- RADAR -->
+      <div class="radar-section">
+        <div class="radar-ring-wrap">
+          <canvas id="radarCanvas" width="380" height="380"></canvas>
+        </div>
+        <div class="radar-readout">
+          <span>RANGE: <strong>120 NM</strong></span>
+          <span>MODE: <strong>ACTIVE</strong></span>
+          <span>CONTACTS: <strong id="contactCount">0</strong></span>
+          <span>SWEEP: <strong id="sweepAngle">---°</strong></span>
+        </div>
+      </div>
+
+      <!-- TARGET PANEL — separate block below radar -->
+      <div class="target-panel">
+        <div class="panel__header">TARGET LOCK</div>
+        <div class="target-grid">
+
+          <div class="target-field">
+            <span class="target-label">DESIGNATION</span>
+            <span class="target-val target-val--hostile" id="t-designation">---</span>
+          </div>
+
+          <div class="target-field">
+            <span class="target-label">TYPE</span>
+            <span class="target-val" id="t-class">---</span>
+          </div>
+
+          <div class="target-field">
+            <span class="target-label">FACTION</span>
+            <span class="target-val" id="t-type">---</span>
+          </div>
+
+          <div class="target-field">
+            <span class="target-label">NATION</span>
+            <span class="target-val" id="t-nation">---</span>
+          </div>
+
+          <div class="target-field">
+            <span class="target-label">BEARING</span>
+            <span class="target-val" id="t-bearing">---</span>
+          </div>
+
+          <div class="target-field">
+            <span class="target-label">RANGE</span>
+            <span class="target-val" id="t-range">---</span>
+          </div>
+
+          <div class="target-field">
+            <span class="target-label">SPEED</span>
+            <span class="target-val" id="t-speed">---</span>
+          </div>
+
+          <div class="target-field">
+            <span class="target-label">STATUS</span>
+            <span class="target-val target-val--warn" id="t-status">NO LOCK</span>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT PANEL -->
+    <aside class="panel panel--right">
+      <div class="panel__header">WEAPONS SYSTEMS</div>
+
+      <div class="weapon-card weapon-card--ready">
+        <div class="weapon-name">MK-45 CANNON</div>
+        <div class="weapon-status">● READY</div>
+        <div class="weapon-ammo">ROUNDS: 120 / 120</div>
+        <div class="weapon-range">RANGE: 24 NM</div>
+        <button class="fire-btn" onclick="fireWeapon('MK-45 CANNON')">FIRE</button>
+      </div>
+
+      <div class="weapon-card weapon-card--armed">
+        <div class="weapon-name">TOMAHAWK BGM-109</div>
+        <div class="weapon-status">● ARMED</div>
+        <div class="weapon-ammo">MISSILES: 8 / 8</div>
+        <div class="weapon-range">RANGE: 900 NM</div>
+        <button class="fire-btn fire-btn--missile" onclick="fireWeapon('TOMAHAWK BGM-109')">LAUNCH</button>
+      </div>
+
+      <div class="weapon-card weapon-card--offline">
+        <div class="weapon-name">PHALANX CIWS</div>
+        <div class="weapon-status">● OFFLINE</div>
+        <div class="weapon-ammo">ROUNDS: 1550 / 1550</div>
+        <div class="weapon-range">RANGE: 1.5 NM</div>
+        <button class="fire-btn fire-btn--disabled" disabled>OFFLINE</button>
+      </div>
+
+      <div class="weapon-card weapon-card--ready">
+        <div class="weapon-name">RIM-66 SM-2</div>
+        <div class="weapon-status">● READY</div>
+        <div class="weapon-ammo">MISSILES: 24 / 24</div>
+        <div class="weapon-range">RANGE: 90 NM</div>
+        <button class="fire-btn" onclick="fireWeapon('RIM-66 SM-2')">LAUNCH</button>
+      </div>
+
+      <div class="divider"></div>
+      <div class="panel__header">COUNTERMEASURES</div>
+      <div class="cm-grid">
+        <button class="cm-btn" onclick="deployCountermeasure('CHAFF')">CHAFF</button>
+        <button class="cm-btn" onclick="deployCountermeasure('FLARE')">FLARE</button>
+        <button class="cm-btn" onclick="deployCountermeasure('DECOY')">DECOY</button>
+        <button class="cm-btn" onclick="deployCountermeasure('ECM')">ECM</button>
+      </div>
+    </aside>
+
+  </div>
+
+  <!-- FOOTER TABS -->
+  <footer class="log-footer">
+    <div class="log-tabs">
+      <button class="log-tab log-tab--active" id="tab-combat"    onclick="switchTab('combat')">// COMBAT LOG //</button>
+      <button class="log-tab"                 id="tab-contacts"  onclick="switchTab('contacts')">// CONTACTS //</button>
+      <button class="log-tab"                 id="tab-status"    onclick="switchTab('status')">// SYSTEM STATUS //</button>
+    </div>
+
+    <div class="log-pane" id="pane-combat">
+      <div class="log-entries" id="logEntries">
+        <div class="log-entry"><span class="log-time">00:00:01</span> System initialized. All stations nominal.</div>
+        <div class="log-entry"><span class="log-time">00:00:03</span> Radar sweep active. Scanning 360°.</div>
+        <div class="log-entry log-entry--warn"><span class="log-time">00:00:07</span> WARNING: Unidentified contact at bearing 047°, range 89 NM.</div>
+        <div class="log-entry log-entry--alert"><span class="log-time">00:00:12</span> ALERT: Contact classified HOSTILE. Weapons free authorized.</div>
+      </div>
+    </div>
+
+    <div class="log-pane log-pane--hidden" id="pane-contacts">
+      <div class="contact-list" id="contactList"></div>
+    </div>
+
+    <div class="log-pane log-pane--hidden" id="pane-status">
+      <div class="status-readout">
+        <div class="status-row"><span class="status-label">MK-45 CANNON</span><span class="status-val" id="st-cannon">120 / 120 RDS</span></div>
+        <div class="status-row"><span class="status-label">TOMAHAWK BGM-109</span><span class="status-val" id="st-tomahawk">8 / 8 MSL</span></div>
+        <div class="status-row"><span class="status-label">RIM-66 SM-2</span><span class="status-val" id="st-sm2">24 / 24 MSL</span></div>
+        <div class="status-row"><span class="status-label">PHALANX CIWS</span><span class="status-val status-val--offline">OFFLINE</span></div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/ship.js"></script>
+  <script src="js/weapons.js"></script>
+  <script src="js/countermeasures.js"></script>
+  <script src="js/target.js"></script>
+  <script src="js/radar.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
