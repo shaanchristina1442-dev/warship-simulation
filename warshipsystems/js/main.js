@@ -56,10 +56,12 @@ function switchTab(name) {
 const gameInterval = setInterval(function() {
     gameTime++;
     updateHUD();
+    enemyAttack();
 
     //check win condition
     if(enemyWarships.length === 0){
         addLog('All hostile vessels destroyed. Mission accomplished!', 'alert');
         clearInterval(gameInterval);
     }
-}, 1000);
+}, 5000);
+

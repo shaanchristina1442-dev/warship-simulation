@@ -1,5 +1,7 @@
 // ship.js
 
+let hullIntegrity = 100;
+
 const enemyWarships = [
   { name: 'Dmitri Petlov',   type: 'Destroyer',  nation: 'Russian Federation', heading: 213, speed: 22, dodge: 0.3, countermeasures: 2 },
   { name: 'Lanchang',        type: 'Cruiser',     nation: 'China',              heading: 145, speed: 18, dodge: 0.2, countermeasures: 3 },
@@ -23,7 +25,7 @@ const friendlyWarships = [
 ];
 
 const ownShip = {
-  name: 'USS Christina Sosa',
+  name: 'USS Lily Collins',
   type: 'Destroyer',
   nation: 'United States',
   heading: 247,
@@ -80,29 +82,71 @@ function moveShips() {
   });
 
 }
-
 function enemyAttack() {
-  //each enemy ship has a small chance to attack each second
   enemyWarships.forEach(ship => {
+
+    // Each enemy has a random chance to fire each second
     const roll = Math.random();
-    if (roll < 0.20) return; // 20% chance to attack
-    
-    //pick a random target - user or friendly warship
-    const targets = ['USER SHIP', ...friendlyWarships];
-    const target = targets[Math.floor(Math.random() * targets.length)];
+    if (roll > 0.15) return; // 15% chance to attack per second
 
-    if (target === 'USER SHIP'){
+    // Pick a random target — own ship or a friendly
+    const targets = ['OWN SHIP', ...friendlyWarships.map(f => f.name)];
+    const target  = targets[Math.floor(Math.random() * targets.length)];
+
+    if (target === 'OWN SHIP') {
+      // Friendly countermeasure roll
       const dodgeRoll = Math.random();
-
-      if (dodgeRoll < ownShip.dodge) {
-        addLog(ship.name + 'fired on ' + ownShip.name + '-- DEPLOY COUNTERMEASURES, ATTACK EVADED.', 'warn');
+      if (dodgeRoll < 0.4) {
+        addLog(ship.name + ' fired on USS LILY COLLINS — COUNTERMEASURES DEPLOYED.', 'warn');
         return;
       }
-      //pause
-    }
 
-  })
+      // Hit — reduce hull integrity
+      hullIntegrity -= Math.floor(Math.random() * 10) + 5;
+      if (hullIntegrity < 0) hullIntegrity = 0;
+      updateHullDisplay();
+      addLog(ship.name + ' HIT USS LILY COLLINS. Hull integrity: ' + hullIntegrity + '%.', 'alert');
+
+      if (hullIntegrity <= 0) {
+        addLog('USS LILY COLLINS DESTROYED. MISSION FAILED.', 'alert');
+      }
+
+    } else {
+      // Attack a friendly ship
+      const friendly = friendlyWarships.find(f => f.name === target);
+      if (!friendly) return;
+
+      const dodgeRoll = Math.random();
+      if (dodgeRoll < 0.3) {
+        addLog(ship.name + ' fired on ' + target + ' — EVADED.', 'warn');
+        return;
+      }
+
+      // Remove friendly ship
+      const index = friendlyWarships.indexOf(friendly);
+      if (index !== -1) friendlyWarships.splice(index, 1);
+      addLog(ship.name + ' DESTROYED ' + target + '.', 'alert');
+    }
+  });
 }
+
+function updateHullDisplay() {
+    const bar = document.querySelector('.stat-fill');
+    const val = document.querySelector('.stat-value');
+    bar.style.width = hullIntegrity + '%';
+    val.innerText = hullIntegrity + '%';
+
+    if (hullIntegrity < 30){
+      bar.style.background = 'var(--red)';
+    }
+    else if (hullIntegrity < 60) {
+      bar.style.background = 'var(--yellow)';
+    } 
+}
+
+
+
+
 
 
 
