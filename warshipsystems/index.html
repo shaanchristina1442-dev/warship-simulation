@@ -83,8 +83,19 @@
 
       <!-- RADAR -->
       <div class="radar-section">
-        <div class="radar-ring-wrap">
-          <canvas id="radarCanvas" width="380" height="380"></canvas>
+        <div class="radar-panels">
+          <div class="radar-panel">
+            <div class="radar-panel-label">SURFACE RADAR</div>
+            <div class="radar-ring-wrap">
+              <canvas id="radarCanvas" width="380" height="380"></canvas>
+            </div>
+          </div>
+          <div class="radar-panel">
+            <div class="radar-panel-label">AIR RADAR</div>
+            <div class="radar-ring-wrap">
+              <canvas id="airRadarCanvas" width="380" height="380"></canvas>
+            </div>
+          </div>
         </div>
         <div class="radar-readout">
           <span>RANGE: <strong>120 NM</strong></span>
@@ -164,12 +175,12 @@
         <button class="fire-btn fire-btn--missile" onclick="fireWeapon('TOMAHAWK BGM-109')">LAUNCH</button>
       </div>
 
-      <div class="weapon-card weapon-card--offline">
+      <div class="weapon-card weapon-card--ready">
         <div class="weapon-name">PHALANX CIWS</div>
-        <div class="weapon-status">● OFFLINE</div>
-        <div class="weapon-ammo">ROUNDS: 1550 / 1550</div>
+        <div class="weapon-status">● READY</div>
+        <div class="weapon-ammo">ROUNDS: 1300 / 1300</div>
         <div class="weapon-range">RANGE: 1.5 NM</div>
-        <button class="fire-btn fire-btn--disabled" disabled>OFFLINE</button>
+        <button class="fire-btn" onclick="fireWeapon('CIWS PHALANX')">FIRE</button>
       </div>
 
       <div class="weapon-card weapon-card--ready">
@@ -213,17 +224,22 @@
       <div class="contact-list" id="contactList"></div>
     </div>
 
+    <div class="log-pane log-pane--hidden" id="pane-air">
+      <div class="contact-list" id="airContactList"></div>
+    </div>
+
     <div class="log-pane log-pane--hidden" id="pane-status">
       <div class="status-readout">
         <div class="status-row"><span class="status-label">MK-45 CANNON</span><span class="status-val" id="st-cannon">120 / 120 RDS</span></div>
         <div class="status-row"><span class="status-label">TOMAHAWK BGM-109</span><span class="status-val" id="st-tomahawk">8 / 8 MSL</span></div>
         <div class="status-row"><span class="status-label">RIM-66 SM-2</span><span class="status-val" id="st-sm2">24 / 24 MSL</span></div>
-        <div class="status-row"><span class="status-label">PHALANX CIWS</span><span class="status-val status-val--offline">OFFLINE</span></div>
+        <div class="status-row"><span class="status-label">PHALANX CIWS</span><span class="status-val" id="st-ciws">1300 / 1300 RDS</span></div>
       </div>
     </div>
   </footer>
 
   <script src="js/ship.js"></script>
+  <script src="js/enemyAircraft.js"></script>
   <script src="js/weapons.js"></script>
   <script src="js/countermeasures.js"></script>
   <script src="js/target.js"></script>

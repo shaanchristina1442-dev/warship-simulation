@@ -2,9 +2,11 @@
 const canvas = document.getElementById('radarCanvas');
 const ctx = canvas.getContext('2d');
 
+const airCanvas = document.getElementById('airRadarCanvas');
+const airCtx = airCanvas.getContext('2d');
 
 const CX = canvas.width / 2;
-const CY = canvas.height /2;
+const CY = canvas.height / 2;
 const RADIUS = canvas.width / 2 - 10;
 
 let angle = 0;
@@ -30,9 +32,6 @@ function drawGrid() {
 }
 function drawSweep(){
     //sweep trail (fading green arc)
-    const gradient = ctx.createConicalGradient
-    ? null: null;
-
     ctx.save();
     ctx.translate(CX, CY);
     ctx.rotate(angle);
@@ -85,24 +84,79 @@ function drawShips() {
   ctx.shadowColor = '#00ff41';
   ctx.fill();
 }
-function update(){
-    //clear
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+function drawAircraftRadar() {
+  enemyAircraft.forEach(plane => {
+    airCtx.beginPath();
+    airCtx.arc(CX + plane.x, CY + plane.y, 3, 0, Math.PI * 2);
+    airCtx.fillStyle = '#ff8800';
+    airCtx.shadowBlur = 8;
+    airCtx.shadowColor = '#ff8800';
+    airCtx.fill();
+  });
+}
 
-    //background
+function drawAirSweep() {
+  airCtx.save();
+  airCtx.translate(CX, CY);
+  airCtx.rotate(angle);
+  airCtx.beginPath();
+  airCtx.moveTo(0, 0);
+  airCtx.arc(0, 0, RADIUS, -0.4, 0);
+  airCtx.fillStyle = 'rgba(255, 136, 0, 0.06)';
+  airCtx.fill();
+  airCtx.beginPath();
+  airCtx.moveTo(0, 0);
+  airCtx.lineTo(RADIUS, 0);
+  airCtx.strokeStyle = '#ff8800';
+  airCtx.lineWidth = 2;
+  airCtx.shadowBlur = 10;
+  airCtx.shadowColor = '#ff8800';
+  airCtx.stroke();
+  airCtx.restore();
+}
+
+function drawAirGrid() {
+  airCtx.strokeStyle = '#2a1500';
+  airCtx.lineWidth = 1;
+  for (let i = 1; i <= 4; i++) {
+    airCtx.beginPath();
+    airCtx.arc(CX, CY, (RADIUS / 4) * i, 0, Math.PI * 2);
+    airCtx.stroke();
+  }
+  airCtx.beginPath();
+  airCtx.moveTo(CX, CY - RADIUS);
+  airCtx.lineTo(CX, CY + RADIUS);
+  airCtx.moveTo(CX - RADIUS, CY);
+  airCtx.lineTo(CX + RADIUS, CY);
+  airCtx.stroke();
+}
+
+function update(){
+    // ── Surface radar ──
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = '#000500';
     ctx.beginPath();
     ctx.arc(CX, CY, RADIUS, 0, Math.PI * 2);
     ctx.fill();
-
     drawGrid();
     drawSweep();
     drawShips();
     drawExplosions();
 
+    // ── Air radar ──
+    airCtx.clearRect(0, 0, airCanvas.width, airCanvas.height);
+    airCtx.fillStyle = '#000500';
+    airCtx.beginPath();
+    airCtx.arc(CX, CY, RADIUS, 0, Math.PI * 2);
+    airCtx.fill();
+    drawAirGrid();
+    drawAirSweep();
+    drawAircraftRadar();
+
     angle += 0.02;
     if (angle > Math.PI * 2) angle = 0;
     moveShips();
+    moveAircraft();
     updateTargetTracking();
     requestAnimationFrame(update);
 }
@@ -116,15 +170,10 @@ canvas.addEventListener('click', function(e) {
   const mouseX = (e.clientX - rect.left) * scaleX - CX;
   const mouseY = (e.clientY - rect.top) * scaleY - CY;
 
-  console.log('click at:', mouseX, mouseY);
-  console.log('ships:', enemyWarships.map(s => ({x: s.x, y: s.y})));
-
   enemyWarships.forEach(ship => {
     const dx = ship.x - mouseX;
     const dy = ship.y - mouseY;
-    const dist = Math.sqrt(dx * dx + dy * dy);
-
-    if( dist < 10){
+    if (Math.sqrt(dx * dx + dy * dy) < 10) {
       lockedTarget = ship;
       lockedTarget.faction = 'HOSTILE';
     }
@@ -132,11 +181,28 @@ canvas.addEventListener('click', function(e) {
   friendlyWarships.forEach(ship => {
     const dx = ship.x - mouseX;
     const dy = ship.y - mouseY;
-    const dist = Math.sqrt(dx * dx + dy * dy);
-
-    if( dist < 10){
+    if (Math.sqrt(dx * dx + dy * dy) < 10) {
       lockedTarget = ship;
       lockedTarget.faction = 'FRIENDLY';
+    }
+  });
+
+  if (lockedTarget) updateTargetPanel(lockedTarget);
+});
+
+airCanvas.addEventListener('click', function(e) {
+  const rect = airCanvas.getBoundingClientRect();
+  const scaleX = airCanvas.width / rect.width;
+  const scaleY = airCanvas.height / rect.height;
+  const mouseX = (e.clientX - rect.left) * scaleX - CX;
+  const mouseY = (e.clientY - rect.top) * scaleY - CY;
+
+  enemyAircraft.forEach(plane => {
+    const dx = plane.x - mouseX;
+    const dy = plane.y - mouseY;
+    if (Math.sqrt(dx * dx + dy * dy) < 10) {
+      lockedTarget = plane;
+      lockedTarget.faction = 'AIRCRAFT';
     }
   });
 
@@ -153,7 +219,9 @@ function updateTargetPanel(ship) {
   document.getElementById('t-status').innerText = 'TRACKING';
 
   const desig = document.getElementById('t-designation');
-  desig.className = ship.faction === 'HOSTILE' ? 'target-val target-val--hostile' : 'target-val';
+  if (ship.faction === 'HOSTILE')        desig.className = 'target-val target-val--hostile';
+  else if (ship.faction === 'AIRCRAFT')  desig.className = 'target-val target-val--aircraft';
+  else                                   desig.className = 'target-val';
 }
 let explosions = [];
 

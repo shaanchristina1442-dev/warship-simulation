@@ -38,12 +38,25 @@ function updateContactList() {
                         '<span class="contact-hdg">' + ship.heading + '°</span>';
         list.appendChild(row);
     });
+
+    const airList = document.getElementById('airContactList');
+    airList.innerHTML = '';
+    enemyAircraft.forEach(function(plane) {
+        const row = document.createElement('div');
+        row.className = 'contact-row contact-row--hostile';
+        row.innerHTML = '<span class="contact-name">' + plane.name + '</span>' +
+                        '<span class="contact-type">' + plane.type + '</span>' +
+                        '<span class="contact-nation">' + plane.nation + '</span>' +
+                        '<span class="contact-hdg">' + plane.heading + '°</span>';
+        airList.appendChild(row);
+    });
 }
 
 function updateStatusPane() {
     document.getElementById('st-cannon').innerText   = cannonRounds   + ' / 120 RDS';
     document.getElementById('st-tomahawk').innerText = tomahawkCount  + ' / 8 MSL';
     document.getElementById('st-sm2').innerText      = sm2Count       + ' / 24 MSL';
+    document.getElementById('st-ciws').innerText     = CWISCount      + ' / 1300 RDS';
 }
 
 function switchTab(name) {
@@ -57,11 +70,13 @@ const gameInterval = setInterval(function() {
     gameTime++;
     updateHUD();
     enemyAttack();
+    aircraftAttack();
+    friendlyAttack();
 
     //check win condition
-    if(enemyWarships.length === 0){
+    if(enemyWarships.length === 0 && enemyAircraft.length === 0){
         addLog('All hostile vessels destroyed. Mission accomplished!', 'alert');
         clearInterval(gameInterval);
     }
-}, 5000);
+}, 10000);
 
