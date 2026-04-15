@@ -27,6 +27,11 @@
     </div>
   </header>
 
+  <div id = "missileWarning">
+    <span> MISSILE INBOUND </span>
+  </div>
+
+
   <!-- BODY WRAPPER: everything below topbar -->
   <div class="body-wrap">
 
@@ -194,10 +199,10 @@
       <div class="divider"></div>
       <div class="panel__header">COUNTERMEASURES</div>
       <div class="cm-grid">
-        <button class="cm-btn" onclick="deployCountermeasure('CHAFF')">CHAFF</button>
-        <button class="cm-btn" onclick="deployCountermeasure('FLARE')">FLARE</button>
-        <button class="cm-btn" onclick="deployCountermeasure('DECOY')">DECOY</button>
-        <button class="cm-btn" onclick="deployCountermeasure('ECM')">ECM</button>
+        <button class="cm-btn" onclick="deployChaff()">CHAFF</button>
+        <button class="cm-btn" onclick="deployFlare()">FLARE</button>
+        <button class="cm-btn" onclick="deployDecoy()">DECOY</button>
+        <button class="cm-btn cm-btn--active" onclick="deployECM()">ECM</button>
       </div>
     </aside>
 

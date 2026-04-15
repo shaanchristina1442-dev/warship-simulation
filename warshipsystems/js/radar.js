@@ -141,6 +141,7 @@ function update(){
     drawGrid();
     drawSweep();
     drawShips();
+    drawEnemyMissiles();
     drawExplosions();
 
     // ── Air radar ──
@@ -156,8 +157,11 @@ function update(){
     angle += 0.02;
     if (angle > Math.PI * 2) angle = 0;
     moveShips();
+    moveMissiles();
     moveAircraft();
+    moveEnemyMissiles();
     updateTargetTracking();
+    drawMissiles();
     requestAnimationFrame(update);
 }
 //locking target
@@ -173,7 +177,7 @@ canvas.addEventListener('click', function(e) {
   enemyWarships.forEach(ship => {
     const dx = ship.x - mouseX;
     const dy = ship.y - mouseY;
-    if (Math.sqrt(dx * dx + dy * dy) < 10) {
+    if (Math.hypot(dx, dy) < 10) {
       lockedTarget = ship;
       lockedTarget.faction = 'HOSTILE';
     }
@@ -181,7 +185,7 @@ canvas.addEventListener('click', function(e) {
   friendlyWarships.forEach(ship => {
     const dx = ship.x - mouseX;
     const dy = ship.y - mouseY;
-    if (Math.sqrt(dx * dx + dy * dy) < 10) {
+    if (Math.hypot(dx, dy) < 10) {
       lockedTarget = ship;
       lockedTarget.faction = 'FRIENDLY';
     }
@@ -200,7 +204,7 @@ airCanvas.addEventListener('click', function(e) {
   enemyAircraft.forEach(plane => {
     const dx = plane.x - mouseX;
     const dy = plane.y - mouseY;
-    if (Math.sqrt(dx * dx + dy * dy) < 10) {
+    if (Math.hypot(dx, dy) < 10) {
       lockedTarget = plane;
       lockedTarget.faction = 'AIRCRAFT';
     }
@@ -223,6 +227,42 @@ function updateTargetPanel(ship) {
   else if (ship.faction === 'AIRCRAFT')  desig.className = 'target-val target-val--aircraft';
   else                                   desig.className = 'target-val';
 }
+let enemyMissiles = [];
+
+function spawnEnemyMissile(attacker) {
+  const dx = -attacker.x;
+  const dy = -attacker.y;
+  const dist = Math.hypot(dx, dy) || 1;
+  const speed = 1.5;
+  enemyMissiles.push({
+    x: attacker.x,
+    y: attacker.y,
+    vx: (dx / dist) * speed,
+    vy: (dy / dist) * speed,
+  });
+  showMissileWarning();
+}
+
+function moveEnemyMissiles() {
+  enemyMissiles = enemyMissiles.filter(m => {
+    m.x += m.vx;
+    m.y += m.vy;
+    return Math.hypot(m.x, m.y) > 6;
+  });
+  if (enemyMissiles.length === 0) hideMissileWarning();
+}
+
+function drawEnemyMissiles() {
+  enemyMissiles.forEach(m => {
+    ctx.beginPath();
+    ctx.arc(CX + m.x, CY + m.y, 3, 0, Math.PI * 2);
+    ctx.fillStyle = '#ffff00';
+    ctx.shadowBlur = 10;
+    ctx.shadowColor = '#ffff00';
+    ctx.fill();
+  });
+}
+
 let explosions = [];
 
 function fireWeaponEffect(ship) {
@@ -230,7 +270,7 @@ function fireWeaponEffect(ship) {
     x: ship.x,
     y: ship.y,
     radius: 2,
-    alpha: 1.0
+    alpha: 1
   });
 }
 
@@ -248,6 +288,27 @@ function drawExplosions() {
 
     exp.radius += 1.5;
     exp.alpha  -= 0.03;
+  });
+}
+
+function drawMissiles() {
+  incomingMissiles.forEach(missile => {
+    ctx.save();
+    ctx.translate(CX + missile.x, CY + missile.y);
+    ctx.rotate(missile.heading);
+    
+    //arrow shape
+    ctx.beginPath();
+    ctx.moveTo(8, 0);
+    ctx.lineTo(-4, -4);
+    ctx.lineTo(-4, 4);
+    ctx.closePath();
+    ctx.fillStyle = '#ff2a2a';
+    ctx.shadowBlur = 12;
+    ctx.shadowColor = '#ff2a2a';
+    ctx.fill();
+
+    ctx.restore();
   });
 }
 

@@ -66,7 +66,7 @@ function switchTab(name) {
     document.getElementById('tab-'  + name).classList.add('log-tab--active');
 }
 // Run HUD update every second
-const gameInterval = setInterval(function() {
+var gameInterval = setInterval(function() {
     gameTime++;
     updateHUD();
     enemyAttack();

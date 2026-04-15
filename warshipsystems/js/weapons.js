@@ -100,7 +100,6 @@ function destroyTarget(weaponName) {
   // ── Cannon — dodge only, no countermeasures ──
   if (weaponName === 'MK-45 CANNON') {
     if (Math.random() < dodge) {
-      lockedTarget = null;
       clearTargetPanel('EVADED');
       addLog(name + ' evaded cannon fire.', 'warn');
       return;
@@ -111,13 +110,11 @@ function destroyTarget(weaponName) {
   if (weaponName === 'TOMAHAWK BGM-109' || weaponName === 'RIM-66 SM-2') {
     if (cms > 0 && Math.random() < dodge) {
       target.countermeasures--;
-      lockedTarget = null;
       clearTargetPanel('EVADED');
       addLog(name + ' deployed countermeasures — ' + weaponName + ' defeated. CM remaining: ' + target.countermeasures + '.', 'warn');
       return;
     }
     if (cms <= 0 && Math.random() < dodge * 0.35) {
-      lockedTarget = null;
       clearTargetPanel('EVADED');
       addLog(name + ' hard-maneuvered — ' + weaponName + ' missed.', 'warn');
       return;
@@ -127,7 +124,6 @@ function destroyTarget(weaponName) {
   // ── CIWS — aircraft dodge only ──
   if (weaponName === 'CIWS PHALANX') {
     if (Math.random() < dodge) {
-      lockedTarget = null;
       clearTargetPanel('EVADED');
       addLog(name + ' broke off — CIWS burst missed.', 'warn');
       return;
@@ -137,10 +133,10 @@ function destroyTarget(weaponName) {
   // ── Hit confirmed ──
   fireWeaponEffect(target);
 
-  const shipIndex = enemyWarships.findIndex(ship => ship === target);
+  const shipIndex = enemyWarships.indexOf(target);
   if (shipIndex !== -1) enemyWarships.splice(shipIndex, 1);
 
-  const aircraftIndex = enemyAircraft.findIndex(plane => plane === target);
+  const aircraftIndex = enemyAircraft.indexOf(target);
   if (aircraftIndex !== -1) enemyAircraft.splice(aircraftIndex, 1);
 
   lockedTarget = null;

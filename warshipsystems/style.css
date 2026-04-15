@@ -369,3 +369,18 @@ canvas#airRadarCanvas {
 ::-webkit-scrollbar       { width: 3px; }
 ::-webkit-scrollbar-track { background: var(--bg-void); }
 ::-webkit-scrollbar-thumb { background: var(--green-dim); border-radius: 2px; }
+
+#missileWarning {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: var(--red);
+  color: #000;
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  padding: 6px;
+  flex-shrink: 0;
+  animation: blink 0.5s infinite;
+}

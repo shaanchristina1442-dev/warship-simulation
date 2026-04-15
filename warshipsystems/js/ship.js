@@ -64,7 +64,7 @@ function moveShips() {
     ship.y += Math.sin(rad) * (ship.speed * 0.01);
 
     //bounce off radar edge
-    const dist = Math.sqrt(ship.x * ship.x + ship.y * ship.y);
+    const dist = Math.hypot(ship.x, ship.y);
     if (dist > RADAR_RADIUS){
       ship.heading = (ship.heading + 180) % 360;
     }
@@ -75,7 +75,7 @@ function moveShips() {
     ship.y += Math.sin(rad) * (ship.speed * 0.01);
 
     //bounce off radar edge
-    const dist = Math.sqrt(ship.x * ship.x + ship.y * ship.y);
+    const dist = Math.hypot(ship.x, ship.y);
     if (dist > RADAR_RADIUS){
       ship.heading = (ship.heading + 180) % 360;
     }
@@ -87,13 +87,15 @@ function enemyAttack() {
 
     // Each enemy has a random chance to fire each second
     const roll = Math.random();
-    if (roll > 0.50) return; // 70% chance to attack per tick
+    if (roll > 0.5) return; // 50% chance to attack per tick
 
     // Pick a random target — own ship or a friendly
     const targets = ['OWN SHIP', ...friendlyWarships.map(f => f.name)];
     const target  = targets[Math.floor(Math.random() * targets.length)];
 
     if (target === 'OWN SHIP') {
+      spawnEnemyMissile(ship);
+
       // countermeasure roll — active CMs raise dodge chance
       const activeCMs = Object.values(cmCooldowns).filter(Boolean).length;
       const dodgeChance = 0.25 + (activeCMs * 0.15);
@@ -111,6 +113,7 @@ function enemyAttack() {
 
       if (hullIntegrity <= 0) {
         addLog('USS LILY COLLINS DESTROYED. MISSION FAILED.', 'alert');
+        clearInterval(gameInterval);
       }
 
     } else {
@@ -135,7 +138,7 @@ function enemyAttack() {
 function friendlyAttack() {
   friendlyWarships.forEach(ship => {
     const roll = Math.random();
-    if (roll > 0.40) return; // 40% chance to attack per tick
+    if (roll > 0.4) return; // 40% chance to attack per tick
 
     // Target a random enemy warship or aircraft
     const targets = [...enemyWarships, ...enemyAircraft];
