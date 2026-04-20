@@ -165,7 +165,6 @@ function update(){
     requestAnimationFrame(update);
 }
 //locking target
-let lockedTarget = null;
 
 canvas.addEventListener('click', function(e) {
   const rect = canvas.getBoundingClientRect();

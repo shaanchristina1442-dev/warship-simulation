@@ -1,16 +1,17 @@
 // countermeasures.js
 let incomingMissiles = [];
 
-function detectIncomingMissile(missile) {
-    incomingMissiles.push({
+function detectIncomingMissile(attacker) {
+  incomingMissiles.push({
     x: attacker.x,
     y: attacker.y,
     heading: Math.atan2(-attacker.y, -attacker.x),
     speed: 6,
     attacker: attacker.name,
     timeLeft: 10,
-});
-addLog('INCOMING MISSILE DETECTED: ' + attacker.name, 'DEPLOY COUNTERMEASURES', 'alert');
+  });
+  showMissileWarning();
+  addLog('INCOMING MISSILE DETECTED from ' + attacker.name + ' — DEPLOY COUNTERMEASURES.', 'alert');
 }
 
 
@@ -21,9 +22,9 @@ function moveMissiles() {
     missile.timeleft -= 2;
   });
   incomingMissiles = incomingMissiles.filter(m => {
-    const dist = Math.hypot(missile.x, missile.y);
+    const dist = Math.hypot(m.x, m.y);
     if (dist < 12) {
-      missileImpact(missile);
+      missileImpact(m);
       return false;
     }
     return true;
@@ -31,8 +32,8 @@ function moveMissiles() {
 }
 
 function missileImpact(missile) {
-  const damage = Math.floor(Math.random() * 15) + 10; // Random damage between 10-25%
-  let hullIntegrity = damage;
+  const damage = Math.floor(Math.random() * 15) + 10;
+  hullIntegrity -= damage;
   if (hullIntegrity < 0) hullIntegrity = 0;
   updateHullDisplay();
   addLog(missile.attacker + ' HIT USS LILY COLLINS with a missile. Hull integrity: ' + hullIntegrity + '%.', 'alert');
@@ -145,7 +146,11 @@ function deployCountermeasure(type) {
   }
 
   cmCooldowns[type] = true;
-  addLog(type + ' deployed.', 'alert');
+
+  if (type === 'CHAFF')  deployChaff();
+  if (type === 'FLARE')  deployFlare();
+  if (type === 'DECOY')  deployDecoy();
+  if (type === 'ECM')    deployECM();
 
   const btn = [...document.querySelectorAll('.cm-btn')]
     .find(b => b.textContent.trim() === type);

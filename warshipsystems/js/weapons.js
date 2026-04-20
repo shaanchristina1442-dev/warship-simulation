@@ -147,7 +147,7 @@ function addLog(message, type) {
   const log = document.getElementById('logEntries');
   const entry = document.createElement('div');
   entry.className = 'log-entry' + (type ? ' log-entry--' + type : '');
-  const time = new Date().toISOString().substr(11, 8);
+  const time = new Date().toString().split(' ')[4].slice(11, 14);
   entry.innerHTML = '<span class="log-time">' + time + '</span> ' + message;
   log.appendChild(entry);
   log.scrollTop = log.scrollHeight;

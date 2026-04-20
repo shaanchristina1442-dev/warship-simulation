@@ -1,5 +1,5 @@
 // ship.js
-
+let lockedTarget = null;
 let hullIntegrity = 100;
 
 const enemyWarships = [
